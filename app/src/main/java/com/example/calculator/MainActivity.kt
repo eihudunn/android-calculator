@@ -49,46 +49,19 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             R.id.btn7 -> addDigit(7)
             R.id.btn8 -> addDigit(8)
             R.id.btn9 -> addDigit(9)
-            R.id.btnAdd -> {
-                op = 1
-                state = 2
-                calcString += " + "
-                calculationString.text = calcString
-            }
-            R.id.btnSubtract -> {
-                op = 2
-                state = 2
-                calcString += " - "
-                calculationString.text = calcString
-            }
-            R.id.btnMultiply -> {
-                op = 3
-                state = 2
-                calcString += " * "
-                calculationString.text = calcString
-            }
-            R.id.btnDivide -> {
-                op = 4
-                state = 2
-                calcString += " / "
-                calculationString.text = calcString
-            }
+            R.id.btnAdd -> handleOperation(1, " + ")
+            R.id.btnSubtract -> handleOperation(2, " - ")
+            R.id.btnMultiply -> handleOperation(3, " * ")
+            R.id.btnDivide -> handleOperation(4, " / ")
             R.id.btnEqual -> {
-                var result = 0
-                when (op) {
-                    1 -> result = op1 + op2
-                    2 -> result = op1 - op2
-                    3 -> result = op1 * op2
-                    4 -> result = op1 / op2
-                }
-                textResult.text = "$result"
-                calcString += " = $result"
+                calculateResult()
+                calcString += " = ${textResult.text}"
                 calculationString.text = calcString
                 state = 1
-                op1 = result
+                op1 = textResult.text.toString().toInt()
                 op2 = 0
                 op = 0
-                calcString = ""
+                calcString = "${textResult.text}"
             }
             R.id.btnC, R.id.btnCE -> {
                 state = 1
@@ -117,12 +90,34 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     textResult.text = "$op2"
                 }
             }
-            R.id.btnDecimal -> {
-            }
+            R.id.btnDecimal -> {}
         }
     }
 
-    fun addDigit(c: Int) {
+    private fun handleOperation(newOp: Int, symbol: String) {
+        if (state == 2) {
+            calculateResult()
+            op1 = textResult.text.toString().toInt()
+            op2 = 0
+        }
+        op = newOp
+        state = 2
+        calcString += symbol
+        calculationString.text = calcString
+    }
+
+    private fun calculateResult() {
+        val result = when (op) {
+            1 -> op1 + op2
+            2 -> op1 - op2
+            3 -> op1 * op2
+            4 -> op1 / op2
+            else -> 0
+        }
+        textResult.text = "$result"
+    }
+
+    private fun addDigit(c: Int) {
         if (state == 1) {
             op1 = op1 * 10 + c
             textResult.text = "$op1"
